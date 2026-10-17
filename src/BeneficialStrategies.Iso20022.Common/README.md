@@ -22,6 +22,12 @@ This library [covers all currently defined messages](../../doc/Scope-Statement.m
 - **Multiplicity-correct** — where a field allows multiple values, it's a collection; where it's optional, it's nullable.
 - **Strongly-typed identifiers** — industry-specific identifiers like CUSIP, SEDOL, IBAN, and BIC are strongly typed, not bare strings; because the implementation is strongly-typed all the way down to the primitives, dirty data that doesn't fit the ISO 20022 spec can never be introduced into your system in the first place.
 
+## Target frameworks
+
+The package targets `net8.0`, `net10.0`, and `net462`. On `net462`, the `Portable.System.DateTimeOnly` package supplies the `DateOnly` and `TimeOnly` framework gaps used by the public ISO 20022 model.
+
+When consuming the `net462` asset from an application that uses `System.Text.Json` 10.x, the application may need binding redirects for transitive `System.*` assemblies. Binding redirects belong in the consuming application's configuration and depend on its hosting model.
+
 ## What's notably missing
 
 - XML Schema Validation

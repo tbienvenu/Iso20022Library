@@ -32,7 +32,12 @@ public sealed class Iso20022NumericValueJsonConverter<TStruct, TValue> : JsonCon
         {
             JsonTokenType.String => reader.GetString()
                 ?? throw new JsonException($"Expected a non-null string for {typeof(TStruct).Name}."),
-            JsonTokenType.Number => Encoding.UTF8.GetString(reader.ValueSpan),
+            JsonTokenType.Number =>
+#if NET462
+                Encoding.UTF8.GetString(reader.ValueSpan.ToArray()),
+#else
+                Encoding.UTF8.GetString(reader.ValueSpan),
+#endif
             JsonTokenType.True => "true",
             JsonTokenType.False => "false",
             _ => throw new JsonException($"Expected a string, number, or boolean for {typeof(TStruct).Name}."),

@@ -34,4 +34,16 @@ public class XsdHexBinaryTests : SimpleValueStringContractTests<XsdHexBinary>
         var ex = Assert.Throws<Iso20022FormatException>(() => new XsdHexBinary("1A2"));
         Assert.NotNull(ex);
     }
+
+    [Fact]
+    public void NullString_ThrowsArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>(() => new XsdHexBinary((string)null!));
+    }
+
+    [Fact]
+    public void NullByteArray_ThrowsArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>(() => new XsdHexBinary((byte[])null!));
+    }
 }

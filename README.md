@@ -26,6 +26,12 @@ If your company builds on it, or you want to see an area kept up to date, there 
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for how issues and pull requests work, and [doc/Releasing.md](doc/Releasing.md) for how releases are made from them.
 
+The core and FluentValidation packages additionally provide a `net462` compatibility target.
+On .NET Framework, `DateOnly` and `TimeOnly` are supplied by the
+`Portable.System.DateTimeOnly` dependency. Applications using `System.Text.Json` 10.x on
+.NET Framework may also need binding redirects for the package's transitive assemblies; those
+redirects are configured by the consuming application.
+
 ## License
 
 Provided free of charge under a very non-restrictive license as a good-faith contribution to the community.

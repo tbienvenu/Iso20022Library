@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  build-and-test:
+  build-and-test-modern:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,20 +16,36 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
-      # A single .NET 10 SDK builds both TFMs (net8.0;net10.0) fine — the SDK targets older
-      # frameworks via downloaded reference packs, no need to install multiple SDK versions
-      # side by side just to build/test. See src/global.json and CLAUDE.md
-      # "Target Framework Policy".
-
-      # TreatWarningsAsErrors is set repo-wide in src/Directory.Build.props, so this single
-      # build step is also the zero-warnings gate — any warning not already suppressed there
-      # (currently only CS0618/CS0612, an ongoing/expected condition, not a bug) fails here.
-      - name: Build (both TFMs, zero warnings enforced)
+      # TreatWarningsAsErrors is set repo-wide in src/Directory.Build.props.
+      - name: Build (all TFMs, zero warnings enforced)
         run: dotnet build src/iso20022.sln -c Release
 
-      - name: Test (both TFMs)
-        run: dotnet test src/iso20022.sln -c Release --no-build
+      - name: Test net8.0
+        run: dotnet test src/iso20022.sln -c Release --no-build --framework net8.0
+
+      - name: Test net10.0
+        run: dotnet test src/iso20022.sln -c Release --no-build --framework net10.0
+
+  test-net462:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      # .NET Framework test hosts run natively on Windows. Building this job separately avoids
+      # depending on Linux/Mono support for the net462 test target.
+      - name: Build all TFMs (zero warnings enforced)
+        run: dotnet build src/iso20022.sln -c Release
 
       - name: Test the release tooling
         run: python3 -m unittest -q test_prepare_release
         working-directory: tools/releasing
+
+      - name: Test Common net462
+        run: dotnet test src/BeneficialStrategies.Iso20022.Common.Tests/BeneficialStrategies.Iso20022.Common.Tests.csproj -c Release --no-build --framework net462
+
+      - name: Test FluentValidation net462
+        run: dotnet test src/BeneficialStrategies.Iso20022.FluentValidation.Tests/BeneficialStrategies.Iso20022.FluentValidation.Tests.csproj -c Release --no-build --framework net462

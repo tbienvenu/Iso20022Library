@@ -207,7 +207,8 @@ cd src && dotnet build BeneficialStrategies.Iso20022.Common -c Release
 
 ### Target Framework Policy
 
-**Multi-target the two most recent .NET LTS releases** — deliberately *LTS releases*, not the two
+**Multi-target the two most recent .NET LTS releases, plus the explicitly supported `net462`
+compatibility target** — deliberately *LTS releases*, not the two
 most recent version numbers. .NET alternates LTS (even-numbered, 3-year support) and STS
 (odd-numbered, 24-month support) every November. Tracking raw version numbers instead of LTS
 status causes needless churn: an STS release reaches end-of-support around the same time as the
@@ -219,7 +220,8 @@ net8.0 (by then over a year past its own end-of-support) — not net11.0 + net12
 
 This applies identically to `BeneficialStrategies.Iso20022`, `BeneficialStrategies.Iso20022.FluentValidation`,
 and both test projects — **test projects multi-target the same TFMs as the library they test**,
-not just the newest one. Source is identical across TFMs, but source-identical does not guarantee
+not just the newest one. `net462` is tested in a Windows CI job because its .NET Framework test
+host is not available on the Linux job. Source is identical across TFMs, but source-identical does not guarantee
 runtime-identical: BCL default behavior (JSON serialization, globalization/culture formatting,
 regex engine internals) has changed across major .NET versions before, and for a financial-data
 library a format drifting by one runtime is a real-money bug, not a style issue. A test project
